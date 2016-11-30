@@ -27,29 +27,28 @@ public class Cesar {
     // --------------------------------
     static public int CryptCaesarMessage(int pLetter)
     {
-    	int cryptedLetterASCII = 0;
+    	int cryptedLetter = 0;
     
     	// We make sure the clear message is contained in the ASCII table
-        if ((pLetter >= 0) && (pLetter <= 255))
-        {
+        if ((pLetter >= 0) && (pLetter <= 255)) {
         	// Our crypted letter has the position of the clear letter + the key
         	// The variable "directionOfShift" alternates from 1 to -1 each turn to change
         	// the direction of the shifting process
-            cryptedLetterASCII = pLetter + clef * directionOfShift;
+            cryptedLetter = pLetter + clef * directionOfShift;
             // If the resulting position is negative ...
-            if (cryptedLetterASCII < 0) {
+            if (cryptedLetter < 0) {
             	// ... we go round the ASCII table ( position 0 minus 1 must yield 255 )
-            	cryptedLetterASCII = pLetter + (256 - (Math.abs(clef) % 256));
+            	cryptedLetter = pLetter + (256 - (Math.abs(clef) % 256));
             }
             // If the resulting position is greater than 255 ...
-            if (cryptedLetterASCII > 255) {
+            if (cryptedLetter > 255) {
             	// ... we also go round the ASCII table. This time a simple modulo is sufficient
-            	cryptedLetterASCII %= 256;
+            	cryptedLetter %= 256;
             }
             // Changes the direction of the shifting process for the next call of the method
             directionOfShift *= -1;
         }
-        return cryptedLetterASCII;
+        return cryptedLetter;
     }
 
 	// --------------------------------
@@ -64,8 +63,7 @@ public class Cesar {
     	int clearLetterASCII = 0;
     
     	// We make sure the encrypted message is contained in the ASCII table
-        if ((pCryptedLetter >= 0) && (pCryptedLetter <= 255))
-        {
+        if ((pCryptedLetter >= 0) && (pCryptedLetter <= 255)) {
         	// Our clear letter has the position of the encrypted letter plus the key
         	// The variable "directionOfShift" alternates from 1 to -1 each turn to change
         	// the direction of the shifting process
