@@ -10,7 +10,7 @@ public class Vigenere {
         keyPosition = 0;
     }
 
-    public static int Encrypt(int message) {
+    public static int encryptVigenere(int message) {
 
         int result;
 

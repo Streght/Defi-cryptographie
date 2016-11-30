@@ -28,16 +28,23 @@ public class Key_Generator {
         }
     }
 
-    public static int generateMask() {
+    public static int[] generateMask() {
 
-        cpt1 = (cpt1 + 1) % output_space_size;
-        cpt2 = (cpt2 + S[cpt1]) % output_space_size;
+        int[] result = new int[3];
 
-        int temp = S[cpt1];
-        S[cpt1] = S[cpt2];
-        S[cpt2] = temp;
+        for (int i = 0; i < 3; i++) {
 
-        return S[(S[cpt1] + S[cpt2]) % output_space_size];
+            cpt1 = (cpt1 + 1) % output_space_size;
+            cpt2 = (cpt2 + S[cpt1]) % output_space_size;
+
+            int temp = S[cpt1];
+            S[cpt1] = S[cpt2];
+            S[cpt2] = temp;
+
+            result[i] = S[(S[cpt1] + S[cpt2]) % output_space_size];
+        }
+
+        return result;
     }
 
 }
