@@ -29,27 +29,4 @@ public class Vigenere {
         keyPosition = (keyPosition + 1) % key.length;
         return result;
     }
-
-    /*
-    public static int Decrypt(int cryptogramme) {
-
-        int result;
-
-        if ((key[keyPosition] & 1) == 0) {
-            // -
-            result = (cryptogramme - key[keyPosition]);
-            if (result < 0) {
-                result += 256;
-            }
-
-        } else {
-            // +
-            result = (cryptogramme + key[keyPosition]) % 256;
-        }
-
-        keyPosition = (keyPosition + 1) % key.length;
-        return result;
-
-    }
-     */
 }

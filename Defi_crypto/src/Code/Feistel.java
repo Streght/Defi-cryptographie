@@ -13,7 +13,7 @@ public class Feistel {
             temp = Caesar.encryptCaesar(buffer[1]);
         }
         if (method.equals("affine")) {
-            //temp = Affin.encryptAffine(buffer[1]);
+            temp = Affine.encryptAffine(buffer[1]);
         }
         if (method.equals("vigenere")) {
             temp = Vigenere.encryptVigenere(buffer[1]);
@@ -34,7 +34,7 @@ public class Feistel {
             temp = Caesar.encryptCaesar(buffer[1] ^ buffer[0] ^ generatorKey);
         }
         if (method.equals("affine")) {
-            //temp = Affin.encryptAffine(buffer[1] ^ buffer[0] ^ generatorKey);
+            temp = Affine.encryptAffine(buffer[1] ^ buffer[0] ^ generatorKey);
         }
         if (method.equals("vigenere")) {
             temp = Vigenere.encryptVigenere(buffer[1] ^ buffer[0] ^ generatorKey);
@@ -55,7 +55,7 @@ public class Feistel {
 
                 Key_Generator.initMask(data.get("generatorkey"));
                 int[] generatorKey = Key_Generator.generateMask();
-                //Affine.init(data.get("affine"));
+                Affine.initAffine(data.get("affine"));
                 Caesar.initCaesar(data.get("caesar")[0]);
                 Vigenere.initVigenere(data.get("vigenere"));
 
@@ -63,7 +63,7 @@ public class Feistel {
 
                     int[] temp = {data.get("message")[i], data.get("message")[i + 1]};
                     temp = feistelCypher("caesar", temp, generatorKey[0]);
-                    //temp = feistelCypher("affine", temp, generatorKey[1]);
+                    temp = feistelCypher("affine", temp, generatorKey[1]);
                     temp = feistelCypher("vigenere", temp, generatorKey[2]);
 
                     result[i] = temp[0];
@@ -75,7 +75,7 @@ public class Feistel {
 
                     Key_Generator.initMask(data.get("generatorkey"));
                     int[] generatorKey = Key_Generator.generateMask();
-                    //Affine.init(data.get("affine"));
+                    Affine.initAffine(data.get("affine"));
                     Caesar.initCaesar(data.get("caesar")[0]);
                     Vigenere.initVigenere(data.get("vigenere"));
 
@@ -85,7 +85,7 @@ public class Feistel {
 
                         int[] temp = {data.get("message")[i], data.get("message")[i + 1]};
                         temp = feistelDecypher("vigenere", temp, generatorKey[2]);
-                        //temp = feistelDecypher("affine", temp, generatorKey[1]);
+                        temp = feistelDecypher("affine", temp, generatorKey[1]);
                         temp = feistelDecypher("caesar", temp, generatorKey[0]);
 
                         result[i] = temp[0];

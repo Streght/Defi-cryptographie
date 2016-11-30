@@ -20,7 +20,7 @@ public class File_Interaction {
         BigInteger b2 = BigInteger.valueOf(coeff[1]);
         BigInteger gcd = b1.gcd(b2);
 
-        return gcd.equals(1) && coeff[0] > 0 && coeff[1] > 0 && coeff[1] < 256;
+        return gcd.equals(BigInteger.valueOf(1)) && coeff[0] > 0 && coeff[1] > 0 && coeff[1] < 256;
     }
 
     public static Map<String, int[]> readFileMessage(String path) {
@@ -106,7 +106,7 @@ public class File_Interaction {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Please check the imported file (incorrect path or missing content)", "Import file problem", JOptionPane.ERROR_MESSAGE);
         } finally {
             try {

@@ -1,2 +1,2 @@
--1000,-2,3,jambon
+23,2,3,jambon
 Douglasadams est un astéroïde de la ceinture principale d'astéroïdes. Il fut découvert par le programme LINEAR le 19 février 2001 à Socorro.
