@@ -67,10 +67,17 @@ public class File_Interaction {
                 }
                 input.put("generatorkey", generatorKey);
 
-                byte[] messageRead = null;
-
                 if (path.equals("message.txt")) {
-                    byte[] SecondLine = br.readLine().getBytes("UTF-8");
+
+                    String stringRead = "";
+                    String currentLine;
+                    
+                    while ((currentLine = br.readLine()) != null) {
+                        stringRead += currentLine + "\r\n";
+                    }
+
+                    byte[] SecondLine = stringRead.getBytes("UTF-8");
+                    byte[] messageRead;
 
                     // Bourrage si la longueur du message n'est pas paire.
                     if ((SecondLine.length & 1) != 0) {
@@ -106,7 +113,7 @@ public class File_Interaction {
             }
 
         } catch (IOException e) {
-            //e.printStackTrace();
+            System.out.print(e.getMessage());
             JOptionPane.showMessageDialog(null, "Please check the imported file (incorrect path or missing content)", "Import file problem", JOptionPane.ERROR_MESSAGE);
         } finally {
             try {
@@ -114,7 +121,7 @@ public class File_Interaction {
                     br.close();
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.print(e.getMessage());
             }
         }
 
@@ -138,7 +145,7 @@ public class File_Interaction {
                 writer.close();
 
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.print(e.getMessage());
             }
         }
     }
@@ -159,7 +166,7 @@ public class File_Interaction {
                 writer.close();
 
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.print(e.getMessage());
             }
         }
     }

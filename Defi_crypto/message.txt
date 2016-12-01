@@ -1,2 +1,6 @@
-23,2,3,jambon
-Douglasadams est un astéroïde de la ceinture principale d'astéroïdes. Il fut découvert par le programme LINEAR le 19 février 2001 à Socorro.
+150,11,50,azerty
+Chuck Rainey né Charles Walter Rainey III le 17 juin 1940 à Cleveland dans l'Ohio est un joueur de guitare basse.
+Il est surtout connu pour avoir joué avec Steely Dan mais il a joué avec d'autres artistes connus depuis 1962.
+Rainey a appris la guitare rythmique et a commencé à jouer dans des groupes locaux. Il se tourne alors vers la guitare basse et travaille comme bassiste de studio à New York, enregistrement ou dans des concerts d'artiste comme Quincy Jones, Aretha Franklin et The Supremes.
+Il est membre du groupe The King Curtis. Il a participé à la deuxième tournée des Beatles aux États-Unis.
+Il s'installe à Los Angeles en 1972 et poursuit sa collaboration avec Quincy Jones au sein du Jones' big band, et sa carrière de musicien de studio.
