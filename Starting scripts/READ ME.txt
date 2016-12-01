@@ -1,0 +1,1 @@
+Merci de bien lire la partie "Fonctionnement du programme" du rapport avant de lancer une encryption / décryptage.

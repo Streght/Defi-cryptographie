@@ -2,20 +2,38 @@ package Code;
 
 import java.util.Map;
 
+/**
+ * The main class is the class run at the program execution.
+ */
 public class Main {
 
-    public static void main(String[] args) throws InterruptedException {
+    /**
+     * Program main.
+     *
+     * @param asArgs Starting arguments : request type (-enc/-dec), inputFile,
+     * outPutFile.
+     * @throws InterruptedException
+     */
+    public static void main(String[] asArgs) throws InterruptedException {
 
-        if (args[0].equals("-enc")) {
-            Map<String, int[]> buffer = File_Interaction.readFileMessage("message.txt");
-            int[] result = Feistel.runFeistel(buffer, "cypher");
-            File_Interaction.writeCryptogramOutput(result);
+        // If we start an encryption.
+        if (asArgs[0].equals("-enc")) {
+            // Read the given file.
+            Map<String, int[]> buffer = File_Interaction.readFileMessage(asArgs[1] + ".txt");
+            // Encrypt it.
+            int[] aiCipherResult = Feistel.runFeistel(buffer, "cipher");
+            // Return encryption result in outputFile.
+            File_Interaction.writeCryptogramOutput(aiCipherResult, asArgs[2]);
         }
 
-        if (args[0].equals("-dec")) {
-            Map<String, int[]> buffer2 = File_Interaction.readFileMessage("cryptogramme.txt");
-            int[] result2 = Feistel.runFeistel(buffer2, "decypher");
-            File_Interaction.writeUncryptedMessageOutput(result2);
+        // If we start a decryption.
+        if (asArgs[0].equals("-dec")) {
+            // Read the given file.
+            Map<String, int[]> buffer2 = File_Interaction.readFileMessage(asArgs[1] + ".enc");
+            // Decrypt it.
+            int[] aiDecipherResult = Feistel.runFeistel(buffer2, "decipher");
+            // Return decryption result in outputFile.
+            File_Interaction.writeUncryptedMessageOutput(aiDecipherResult, asArgs[2]);
         }
     }
 }

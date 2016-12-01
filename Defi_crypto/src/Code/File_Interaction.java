@@ -9,112 +9,159 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JOptionPane;
 
+/**
+ * Class used to handle interaction with file.
+ */
 public class File_Interaction {
 
-    private static Map<String, int[]> input = null;
-    private static String keysAsString;
+    // Map used to store read data.
+    private static Map<String, int[]> m_mInput = null;
+    // String used to store the keys.
+    private static String m_sKeysAsString;
 
-    public static boolean checkAffine(int[] coeff) {
+    /**
+     * Check if the affine coefficients are correct i.e. GCD(a,b) = 0 and a > 0.
+     *
+     * @param p_aiAffineCoeff An array with the 2 affine coeff to check.
+     * @return True if the 2 coefficients are correct, false otherwise.
+     */
+    public static boolean checkAffine(int[] p_aiAffineCoeff) {
 
-        BigInteger b1 = BigInteger.valueOf(coeff[0]);
-        BigInteger b2 = BigInteger.valueOf(coeff[1]);
+        BigInteger b1 = BigInteger.valueOf(p_aiAffineCoeff[0]);
+        BigInteger b2 = BigInteger.valueOf(256);
         BigInteger gcd = b1.gcd(b2);
 
-        return gcd.equals(BigInteger.valueOf(1)) && coeff[0] > 0 && coeff[1] > 0 && coeff[1] < 256;
+        return gcd.equals(BigInteger.valueOf(1)) && p_aiAffineCoeff[0] > 0;
     }
 
-    public static Map<String, int[]> readFileMessage(String path) {
+    /**
+     * Read the .txt / .enc file at the path given and return a map containing
+     * all the file informations.
+     *
+     * @param p_sPath The file path.
+     * @return A map containing the file information : key + message.
+     */
+    public static Map<String, int[]> readFileMessage(String p_sPath) {
 
         BufferedReader br = null;
 
         try {
-            input = new HashMap<>();
-            br = new BufferedReader(new FileReader(path));
+            m_mInput = new HashMap<>();
+            br = new BufferedReader(new FileReader(p_sPath));
 
             // Read the first line.
-            keysAsString = br.readLine();
-            if (keysAsString != null) {
+            m_sKeysAsString = br.readLine();
+            if (m_sKeysAsString != null) {
 
                 // Isolate each key.
-                String[] keys = keysAsString.split(",");
+                m_sKeysAsString = m_sKeysAsString.replace(" ", "");
+                String[] asKeys = m_sKeysAsString.split(",");
 
-                // Add the Cesar key to the map.
-                input.put("caesar", new int[]{Integer.parseInt(keys[0])});
-                // Add the affine keys to the map.
-                int[] affineCoeff = {Integer.parseInt(keys[1]), Integer.parseInt(keys[2])};
+                try {
+                    // Add the Cesar key to the map.
+                    m_mInput.put("caesar", new int[]{Integer.parseInt(asKeys[0])});
+                    // Add the affine keys to the map.
+                    int[] aiAffineCoeff = {Integer.parseInt(asKeys[1]), Integer.parseInt(asKeys[2])};
 
-                if (checkAffine(affineCoeff)) {
-                    input.put("affine", affineCoeff);
-                } else {
-                    JOptionPane.showMessageDialog(null, "Please check the affine encryption coefficients (a>0 and 0<b<256)", "Wrong affine coefficients", JOptionPane.ERROR_MESSAGE);
+                    if (checkAffine(aiAffineCoeff)) {
+                        m_mInput.put("affine", aiAffineCoeff);
+                    } else {
+                        // Dectect if the affine coefficients aren't correct.
+                        JOptionPane.showMessageDialog(null,
+                                "Please check the affine encryption coefficients (a>0 and 0<b<256)",
+                                "Wrong affine coefficients",
+                                JOptionPane.ERROR_MESSAGE);
+                        return null;
+                    }
+                } catch (NumberFormatException e) {
+                    // Dectect if the numbers are to big or contains letters.
+                    JOptionPane.showMessageDialog(null,
+                            "Please check you correctly entered the keys value at the beginning of the file",
+                            "Incorrect or missing keys",
+                            JOptionPane.ERROR_MESSAGE);
                     return null;
                 }
 
                 // Add the Vigenere key converted to int[] to the map
-                byte[] vigenereKeyRead = keys[3].getBytes("UTF-8");
-                int[] vigenereKey = new int[vigenereKeyRead.length];
-                for (int i = 0; i < vigenereKeyRead.length; i++) {
-                    vigenereKey[i] = vigenereKeyRead[i];
+                byte[] abVigenereKeyRead = asKeys[3].getBytes("UTF-8");
+                int[] aiVigenereKey = new int[abVigenereKeyRead.length];
+                for (int i = 0; i < abVigenereKeyRead.length; i++) {
+                    aiVigenereKey[i] = abVigenereKeyRead[i];
                 }
-                input.put("vigenere", vigenereKey);
+                m_mInput.put("vigenere", aiVigenereKey);
 
                 // Add the generator key converted to int[] to the map
-                String temp = keys[0] + keys[3] + keys[1] + keys[2];
-                byte[] generatorKeyRead = temp.getBytes("UTF-8");
-                int[] generatorKey = new int[generatorKeyRead.length];
-                for (int i = 0; i < generatorKeyRead.length; i++) {
-                    generatorKey[i] = generatorKeyRead[i];
+                String temp = asKeys[0] + asKeys[3] + asKeys[1] + asKeys[2];
+                byte[] abGeneratorKeyRead = temp.getBytes("UTF-8");
+                int[] aiGeneratorKey = new int[abGeneratorKeyRead.length];
+                for (int i = 0; i < abGeneratorKeyRead.length; i++) {
+                    aiGeneratorKey[i] = abGeneratorKeyRead[i];
                 }
-                input.put("generatorkey", generatorKey);
+                m_mInput.put("generatorkey", aiGeneratorKey);
 
-                if (path.equals("message.txt")) {
+                // If the file is an uncrypted file.
+                if (p_sPath.contains(".txt")) {
 
-                    String stringRead = "";
-                    String currentLine;
-                    
-                    while ((currentLine = br.readLine()) != null) {
-                        stringRead += currentLine + "\r\n";
+                    // Read the message.
+                    String sStringRead = "";
+                    String sCurrentLine;
+                    while ((sCurrentLine = br.readLine()) != null) {
+                        sStringRead += sCurrentLine + "\r\n";
                     }
 
-                    byte[] SecondLine = stringRead.getBytes("UTF-8");
-                    byte[] messageRead;
+                    // get byte with UTF-8 encoding.
+                    byte[] abLine = sStringRead.getBytes("UTF-8");
+                    byte[] abMessageRead;
 
-                    // Bourrage si la longueur du message n'est pas paire.
-                    if ((SecondLine.length & 1) != 0) {
-                        messageRead = new byte[SecondLine.length + 1];
-                        System.arraycopy(SecondLine, 0, messageRead, 0, SecondLine.length);
-                        messageRead[SecondLine.length] = 0;
+                    // Add the null caracter if the string length isn't even.
+                    if ((abLine.length & 1) != 0) {
+                        abMessageRead = new byte[abLine.length + 1];
+                        System.arraycopy(abLine, 0, abMessageRead, 0, abLine.length);
+                        abMessageRead[abLine.length] = 0;
                     } else {
-                        messageRead = SecondLine;
+                        abMessageRead = abLine;
                     }
 
-                    int[] message = new int[messageRead.length];
-                    for (int i = 0; i < messageRead.length; i++) {
-                        message[i] = messageRead[i] & 0xFF;
+                    // Takes care of the extended ASCII caracters.
+                    int[] aiMessage = new int[abMessageRead.length];
+                    for (int i = 0; i < abMessageRead.length; i++) {
+                        aiMessage[i] = abMessageRead[i] & 0xFF;
                     }
-                    input.put("message", message);
+                    m_mInput.put("message", aiMessage);
                 }
 
-                if (path.equals("cryptogramme.txt")) {
+                // If the file is an encrypted file.
+                if (p_sPath.contains(".enc")) {
 
-                    String SecondLine = br.readLine();
-                    String[] messageSplit = SecondLine.split("(?<=\\G..)");
-
-                    int[] cryptogram = new int[messageSplit.length];
-
-                    for (int i = 0; i < messageSplit.length; i++) {
-                        cryptogram[i] = Integer.parseInt(messageSplit[i], 16);
+                    String sLine = "";
+                    String sCurrentLine;
+                    while ((sCurrentLine = br.readLine()) != null) {
+                        // Remove unwanted spaces.
+                        sCurrentLine = sCurrentLine.replace(" ", "");
+                        sLine = sLine + sCurrentLine;
                     }
 
-                    input.put("message", cryptogram);
+                    // Split the message every 2 hexadecimal character.
+                    String[] asMessageSplit = sLine.split("(?<=\\G..)");
+
+                    int[] aiCryptogram = new int[asMessageSplit.length];
+
+                    for (int i = 0; i < asMessageSplit.length; i++) {
+                        aiCryptogram[i] = Integer.parseInt(asMessageSplit[i], 16);
+                    }
+
+                    m_mInput.put("message", aiCryptogram);
                 }
             } else {
                 throw new IOException();
             }
 
         } catch (IOException e) {
-            System.out.print(e.getMessage());
-            JOptionPane.showMessageDialog(null, "Please check the imported file (incorrect path or missing content)", "Import file problem", JOptionPane.ERROR_MESSAGE);
+            // Detect if the filename isn't correct.
+            JOptionPane.showMessageDialog(null,
+                    "Please check the imported file (incorrect path or missing content)",
+                    "Import file problem",
+                    JOptionPane.ERROR_MESSAGE);
         } finally {
             try {
                 if (br != null) {
@@ -125,24 +172,46 @@ public class File_Interaction {
             }
         }
 
-        return input;
+        return m_mInput;
     }
 
-    public static void writeCryptogramOutput(int[] buffer) {
+    /**
+     * Write the cryptogram output in hexadecimal base.
+     *
+     * @param p_aiDataBuffer The data buffer to write.
+     * @param p_sOutputFileName The output file name.
+     */
+    public static void writeCryptogramOutput(int[] p_aiDataBuffer, String p_sOutputFileName) {
 
-        if (buffer != null) {
+        if (p_aiDataBuffer != null) {
+            PrintWriter prWriter;
+
             try {
-                PrintWriter writer = new PrintWriter("cryptogramme.txt", "UTF-8");
-                writer.println(keysAsString);
+                prWriter = new PrintWriter(p_sOutputFileName + ".enc", "UTF-8");
 
-                for (int i = 0; i < buffer.length; i++) {
-                    if (buffer[i] < 16) {
-                        writer.print("0");
+                // Write as hexadecimal numbers, 8 blocks of 2 letters per line.
+                // Each 2 letters is separated with a space.
+                int iIndexLine = 0;
+                int iIndexBloc = 0;
+                for (int i = 0; i < p_aiDataBuffer.length; i++) {
+                    if (p_aiDataBuffer[i] < 16) {
+                        prWriter.print("0");
                     }
-                    writer.print(Integer.toHexString(buffer[i]));
+                    // Write as hexadecimal numbers.
+                    prWriter.print(Integer.toHexString(p_aiDataBuffer[i]));
+                    iIndexLine++;
+                    iIndexBloc++;
+                    if (iIndexBloc == 2) {
+                        prWriter.print(" ");
+                        iIndexBloc = 0;
+                    }
+                    if (iIndexLine == 16) {
+                        prWriter.print("\r\n");
+                        iIndexLine = 0;
+                    }
                 }
 
-                writer.close();
+                prWriter.close();
 
             } catch (IOException e) {
                 System.out.print(e.getMessage());
@@ -150,19 +219,35 @@ public class File_Interaction {
         }
     }
 
-    public static void writeUncryptedMessageOutput(int[] buffer) {
+    /**
+     * Write the uncrypted text out.
+     *
+     * @param p_aiDataBuffer The databuffer to write.
+     * @param p_sOutputFileName The output file name.
+     */
+    public static void writeUncryptedMessageOutput(int[] p_aiDataBuffer, String p_sOutputFileName) {
 
-        if (buffer != null) {
+        if (p_aiDataBuffer != null) {
+            PrintWriter writer;
+
             try {
-                byte[] temp = new byte[buffer.length];
+                byte[] abBufferToWrite;
 
-                for (int i = 0; i < buffer.length; i++) {
-                    temp[i] = (byte) buffer[i];
+                // Delete the character used to make the length even.
+                if (p_aiDataBuffer[p_aiDataBuffer.length - 1] == 0) {
+                    abBufferToWrite = new byte[p_aiDataBuffer.length - 1];
+                } else {
+                    abBufferToWrite = new byte[p_aiDataBuffer.length];
                 }
 
-                PrintWriter writer = new PrintWriter("message_uncrypted.txt", "UTF-8");
-                writer.println(keysAsString);
-                writer.print(new String(temp, "UTF-8"));
+                // Fill the buffer to write down.
+                for (int i = 0; i < abBufferToWrite.length; i++) {
+                    abBufferToWrite[i] = (byte) p_aiDataBuffer[i];
+                }
+
+                // Write down text with UTF-8 encoding.
+                writer = new PrintWriter(p_sOutputFileName + ".txt", "UTF-8");
+                writer.print(new String(abBufferToWrite, "UTF-8"));
                 writer.close();
 
             } catch (IOException e) {
@@ -170,5 +255,4 @@ public class File_Interaction {
             }
         }
     }
-
 }

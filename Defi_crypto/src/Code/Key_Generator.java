@@ -1,50 +1,65 @@
 package Code;
 
+/**
+ * The key generator class is the class used to simulate the RC4 algorithm.
+ */
 public class Key_Generator {
 
-    private static int[] S;
-    private static int output_space_size;
-    private static int cpt1;
-    private static int cpt2;
+    // The buffer.
+    private static int[] m_aiBuffer;
+    // The buffer size.
+    private static final int OUTPUT_SPACE_SIZE = 256;
+    // The first counter.
+    private static int m_iCpt1;
+    // The second counter.
+    private static int m_iCpt2;
 
-    public static void initMask(int[] key) {
+    /**
+     * We initialize the buffer state with the key.
+     *
+     * @param p_aiKey The key used to initialize.
+     */
+    public static void initMask(int[] p_aiKey) {
 
-        S = new int[256];
-        output_space_size = 256;
-        cpt1 = 0;
-        cpt2 = 0;
+        m_aiBuffer = new int[OUTPUT_SPACE_SIZE];
+        m_iCpt1 = 0;
+        m_iCpt2 = 0;
         int j = 0;
 
-        for (int i = 0; i < output_space_size; i++) {
-            S[i] = i;
+        for (int i = 0; i < OUTPUT_SPACE_SIZE; i++) {
+            m_aiBuffer[i] = i;
         }
 
-        for (int i = 0; i < output_space_size; i++) {
-            j = (j + S[i] + key[i % key.length]) % output_space_size;
+        // Scramble the buffer with the key value.
+        for (int i = 0; i < OUTPUT_SPACE_SIZE; i++) {
+            j = (j + m_aiBuffer[i] + p_aiKey[i % p_aiKey.length]) % OUTPUT_SPACE_SIZE;
 
-            int temp = S[i];
-            S[i] = S[j];
-            S[j] = temp;
+            int iPermutationTemp = m_aiBuffer[i];
+            m_aiBuffer[i] = m_aiBuffer[j];
+            m_aiBuffer[j] = iPermutationTemp;
         }
     }
 
+    /**
+     * Generate 3 key used for encryption / decryption.
+     *
+     * @return A int[3] with 3 pseudo-random-generated key.
+     */
     public static int[] generateMask() {
 
-        int[] result = new int[3];
+        int[] aiResult = new int[3];
 
         for (int i = 0; i < 3; i++) {
 
-            cpt1 = (cpt1 + 1) % output_space_size;
-            cpt2 = (cpt2 + S[cpt1]) % output_space_size;
+            m_iCpt1 = (m_iCpt1 + 1) % OUTPUT_SPACE_SIZE;
+            m_iCpt2 = (m_iCpt2 + m_aiBuffer[m_iCpt1]) % OUTPUT_SPACE_SIZE;
 
-            int temp = S[cpt1];
-            S[cpt1] = S[cpt2];
-            S[cpt2] = temp;
+            int iPermutationTemp = m_aiBuffer[m_iCpt1];
+            m_aiBuffer[m_iCpt1] = m_aiBuffer[m_iCpt2];
+            m_aiBuffer[m_iCpt2] = iPermutationTemp;
 
-            result[i] = S[(S[cpt1] + S[cpt2]) % output_space_size];
+            aiResult[i] = m_aiBuffer[(m_aiBuffer[m_iCpt1] + m_aiBuffer[m_iCpt2]) % OUTPUT_SPACE_SIZE];
         }
-
-        return result;
+        return aiResult;
     }
-
 }

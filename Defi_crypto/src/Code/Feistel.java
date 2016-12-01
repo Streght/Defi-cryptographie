@@ -2,102 +2,130 @@ package Code;
 
 import java.util.Map;
 
+/**
+ * Class used to run the Feistel diagram of the program.
+ */
 public class Feistel {
 
+    /**
+     * Execute a Feistel encryption step with a given encryption method on 2
+     * letters.
+     *
+     * @param method The encryption method used for the Feistel step.
+     * @param buffer The two letters buffer to encrypt.
+     * @param generatorKey The key generated with the RC4 generator.
+     * @return The encrypted two letters as an array.
+     */
     private static int[] feistelCypher(String method, int[] buffer, int generatorKey) {
 
-        int[] result = new int[2];
-        int temp = -1;
+        int[] aiFeistelResult = new int[2];
+        int iEncryptionResult = -1;
 
         if (method.equals("caesar")) {
-            temp = Caesar.encryptCaesar(buffer[1]);
+            iEncryptionResult = Caesar.encryptCaesar(buffer[1]);
         }
         if (method.equals("affine")) {
-            temp = Affine.encryptAffine(buffer[1]);
+            iEncryptionResult = Affine.encryptAffine(buffer[1]);
         }
         if (method.equals("vigenere")) {
-            temp = Vigenere.encryptVigenere(buffer[1]);
+            iEncryptionResult = Vigenere.encryptVigenere(buffer[1]);
         }
 
-        result[0] = (buffer[0] ^ temp) ^ generatorKey ^ buffer[1];
-        result[1] = buffer[0] ^ temp;
+        // Apply the Feistel equations to encryption.
+        aiFeistelResult[0] = (buffer[0] ^ iEncryptionResult) ^ generatorKey ^ buffer[1];
+        aiFeistelResult[1] = buffer[0] ^ iEncryptionResult;
 
-        return result;
+        return aiFeistelResult;
     }
 
+    /**
+     * Execute a Feistel decryption step with a given encryption method on 2
+     * letters.
+     *
+     * @param method The encryption method used for the Feistel step.
+     * @param buffer The two letters buffer to decrypt.
+     * @param generatorKey The key generated with the RC4 generator.
+     * @return The decrypted two letters as an array.
+     */
     private static int[] feistelDecypher(String method, int[] buffer, int generatorKey) {
 
-        int[] result = new int[2];
-        int temp = -1;
+        int[] aiFeistelResult = new int[2];
+        int iEncryptionResult = -1;
 
         if (method.equals("caesar")) {
-            temp = Caesar.encryptCaesar(buffer[1] ^ buffer[0] ^ generatorKey);
+            iEncryptionResult = Caesar.encryptCaesar(buffer[1] ^ buffer[0] ^ generatorKey);
         }
         if (method.equals("affine")) {
-            temp = Affine.encryptAffine(buffer[1] ^ buffer[0] ^ generatorKey);
+            iEncryptionResult = Affine.encryptAffine(buffer[1] ^ buffer[0] ^ generatorKey);
         }
         if (method.equals("vigenere")) {
-            temp = Vigenere.encryptVigenere(buffer[1] ^ buffer[0] ^ generatorKey);
+            iEncryptionResult = Vigenere.encryptVigenere(buffer[1] ^ buffer[0] ^ generatorKey);
         }
 
-        result[0] = buffer[1] ^ temp;
-        result[1] = buffer[0] ^ generatorKey ^ buffer[1];
+        // Apply the Feistel equation to decryption.
+        aiFeistelResult[0] = buffer[1] ^ iEncryptionResult;
+        aiFeistelResult[1] = buffer[0] ^ generatorKey ^ buffer[1];
 
-        return result;
+        return aiFeistelResult;
     }
 
-    public static int[] runFeistel(Map<String, int[]> data, String toDo) {
+    /**
+     * Run the Feistel algorithm on a given dataset.
+     *
+     * @param p_mData The dataset to encrypt / decrypt.
+     * @param p_sToDo What to do : encrypt or decrypt.
+     * @return The encrypted / decrypted dataset.
+     */
+    public static int[] runFeistel(Map<String, int[]> p_mData, String p_sToDo) {
+        if (p_mData != null && !p_mData.isEmpty()) {
 
-        if (data != null && !data.isEmpty()) {
-            int[] result = new int[data.get("message").length];
+            // The result buffer.
+            int[] aiResultBuffer = new int[p_mData.get("message").length];
 
-            if (toDo.equals("cypher")) {
+            // If we have to cipher
+            if (p_sToDo.equals("cipher")) {
+                // Init the different classes.
+                Key_Generator.initMask(p_mData.get("generatorkey"));
+                int[] aiGeneratorKey = Key_Generator.generateMask();
+                Affine.initAffine(p_mData.get("affine"));
+                Caesar.initCaesar(p_mData.get("caesar")[0]);
+                Vigenere.initVigenere(p_mData.get("vigenere"));
 
-                Key_Generator.initMask(data.get("generatorkey"));
-                int[] generatorKey = Key_Generator.generateMask();
-                Affine.initAffine(data.get("affine"));
-                Caesar.initCaesar(data.get("caesar")[0]);
-                Vigenere.initVigenere(data.get("vigenere"));
+                // Run the Feistel on each block of 2 letters.
+                for (int i = 0; i < aiResultBuffer.length - 1; i += 2) {
+                    int[] aiFeistelResult = {p_mData.get("message")[i], p_mData.get("message")[i + 1]};
+                    aiFeistelResult = feistelCypher("caesar", aiFeistelResult, aiGeneratorKey[0]);
+                    aiFeistelResult = feistelCypher("affine", aiFeistelResult, aiGeneratorKey[1]);
+                    aiFeistelResult = feistelCypher("vigenere", aiFeistelResult, aiGeneratorKey[2]);
 
-                for (int i = 0; i < result.length - 1; i += 2) {
-
-                    int[] temp = {data.get("message")[i], data.get("message")[i + 1]};
-                    temp = feistelCypher("caesar", temp, generatorKey[0]);
-                    temp = feistelCypher("affine", temp, generatorKey[1]);
-                    temp = feistelCypher("vigenere", temp, generatorKey[2]);
-
-                    result[i] = temp[0];
-                    result[i + 1] = temp[1];
-                }
-
-            } else {
-                if (toDo.equals("decypher")) {
-
-                    Key_Generator.initMask(data.get("generatorkey"));
-                    int[] generatorKey = Key_Generator.generateMask();
-                    Affine.initAffine(data.get("affine"));
-                    Caesar.initCaesar(data.get("caesar")[0]);
-                    Vigenere.initVigenere(data.get("vigenere"));
-
-                    Key_Generator.initMask(data.get("generatorkey"));
-
-                    for (int i = 0; i < result.length - 1; i += 2) {
-
-                        int[] temp = {data.get("message")[i], data.get("message")[i + 1]};
-                        temp = feistelDecypher("vigenere", temp, generatorKey[2]);
-                        temp = feistelDecypher("affine", temp, generatorKey[1]);
-                        temp = feistelDecypher("caesar", temp, generatorKey[0]);
-
-                        result[i] = temp[0];
-                        result[i + 1] = temp[1];
-                    }
-
+                    aiResultBuffer[i] = aiFeistelResult[0];
+                    aiResultBuffer[i + 1] = aiFeistelResult[1];
                 }
             }
 
-            return result;
+            // If we have to decipher.
+            if (p_sToDo.equals("decipher")) {
+                // Init the different classes.
+                Key_Generator.initMask(p_mData.get("generatorkey"));
+                int[] aiGeneratorKey = Key_Generator.generateMask();
+                Affine.initAffine(p_mData.get("affine"));
+                Caesar.initCaesar(p_mData.get("caesar")[0]);
+                Vigenere.initVigenere(p_mData.get("vigenere"));
+
+                // Run the Feistel on each block of 2 letters.
+                for (int i = 0; i < aiResultBuffer.length - 1; i += 2) {
+                    int[] aiFeistelResult = {p_mData.get("message")[i], p_mData.get("message")[i + 1]};
+                    aiFeistelResult = feistelDecypher("vigenere", aiFeistelResult, aiGeneratorKey[2]);
+                    aiFeistelResult = feistelDecypher("affine", aiFeistelResult, aiGeneratorKey[1]);
+                    aiFeistelResult = feistelDecypher("caesar", aiFeistelResult, aiGeneratorKey[0]);
+
+                    aiResultBuffer[i] = aiFeistelResult[0];
+                    aiResultBuffer[i + 1] = aiFeistelResult[1];
+                }
+            }
+
+            return aiResultBuffer;
         }
         return null;
     }
-
 }

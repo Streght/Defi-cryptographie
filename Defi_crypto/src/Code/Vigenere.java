@@ -1,32 +1,48 @@
 package Code;
 
+/**
+ * The Vigenere class is used to run a Vigenere encryption.
+ */
 public class Vigenere {
 
-    private static int[] key;
-    private static int keyPosition;
+    // Vigenere key.
+    private static int[] m_aiKey;
+    // Position in the key.
+    private static int m_iKeyPosition;
 
-    public static void initVigenere(int[] keyToUse) {
-        key = keyToUse;
-        keyPosition = 0;
+    /**
+     * Initialize Vigenere key value.
+     *
+     * @param p_aiKeyToUse The key value.
+     */
+    public static void initVigenere(int[] p_aiKeyToUse) {
+        m_aiKey = p_aiKeyToUse;
+        m_iKeyPosition = 0;
     }
 
-    public static int encryptVigenere(int message) {
+    /**
+     * Run the Vigenere encryption on the given letter.
+     *
+     * @param p_iMessage The letter to encrypt as an int.
+     * @return The encrypted letter.
+     */
+    public static int encryptVigenere(int p_iMessage) {
 
-        int result;
+        int iResult;
 
-        if ((key[keyPosition] & 1) == 0) {
+        if ((m_aiKey[m_iKeyPosition] & 1) == 0) {
             // +
-            result = (message + key[keyPosition]) % 256;
+            iResult = (p_iMessage + m_aiKey[m_iKeyPosition]) % 256;
 
         } else {
             // -
-            result = (message - key[keyPosition]);
-            if (result < 0) {
-                result += 256;
+            iResult = (p_iMessage - m_aiKey[m_iKeyPosition]);
+            if (iResult < 0) {
+                iResult += 256;
             }
         }
 
-        keyPosition = (keyPosition + 1) % key.length;
-        return result;
+        m_iKeyPosition = (m_iKeyPosition + 1) % m_aiKey.length;
+        return iResult;
     }
 }
