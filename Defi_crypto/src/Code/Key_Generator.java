@@ -1,5 +1,7 @@
 package Code;
 
+import javax.swing.JOptionPane;
+
 /**
  * The key generator class is the class used to simulate the RC4 algorithm.
  */
@@ -21,22 +23,29 @@ public class Key_Generator {
      */
     public static void initMask(int[] p_aiKey) {
 
-        m_aiBuffer = new int[OUTPUT_SPACE_SIZE];
-        m_iCpt1 = 0;
-        m_iCpt2 = 0;
-        int j = 0;
+        try {
+            m_aiBuffer = new int[OUTPUT_SPACE_SIZE];
+            m_iCpt1 = 0;
+            m_iCpt2 = 0;
+            int j = 0;
 
-        for (int i = 0; i < OUTPUT_SPACE_SIZE; i++) {
-            m_aiBuffer[i] = i;
-        }
+            for (int i = 0; i < OUTPUT_SPACE_SIZE; i++) {
+                m_aiBuffer[i] = i;
+            }
 
-        // Scramble the buffer with the key value.
-        for (int i = 0; i < OUTPUT_SPACE_SIZE; i++) {
-            j = (j + m_aiBuffer[i] + p_aiKey[i % p_aiKey.length]) % OUTPUT_SPACE_SIZE;
+            // Scramble the buffer with the key value.
+            for (int i = 0; i < OUTPUT_SPACE_SIZE; i++) {
+                j = (j + m_aiBuffer[i] + p_aiKey[i % p_aiKey.length]) % OUTPUT_SPACE_SIZE;
 
-            int iPermutationTemp = m_aiBuffer[i];
-            m_aiBuffer[i] = m_aiBuffer[j];
-            m_aiBuffer[j] = iPermutationTemp;
+                int iPermutationTemp = m_aiBuffer[i];
+                m_aiBuffer[i] = m_aiBuffer[j];
+                m_aiBuffer[j] = iPermutationTemp;
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            JOptionPane.showMessageDialog(null,
+                    "Please do not put any ASCII extended character in the Vigenere key",
+                    e.toString(),
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 

@@ -77,7 +77,7 @@ public class File_Interaction {
                     // Dectect if the numbers are to big or contains letters.
                     JOptionPane.showMessageDialog(null,
                             "Please check you correctly entered the keys value at the beginning of the file",
-                            "Incorrect or missing keys",
+                            e.toString(),
                             JOptionPane.ERROR_MESSAGE);
                     return null;
                 }
@@ -160,7 +160,7 @@ public class File_Interaction {
             // Detect if the filename isn't correct.
             JOptionPane.showMessageDialog(null,
                     "Please check the imported file (incorrect path or missing content)",
-                    "Import file problem",
+                    e.toString(),
                     JOptionPane.ERROR_MESSAGE);
         } finally {
             try {

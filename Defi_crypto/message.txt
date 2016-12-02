@@ -1,3 +1,6 @@
-512,353,361,azerty
-Au Québec, l'aide sociale (communément appelé Bien-être social, abrégé en bien-être ou B.S. ), est un programme du Gouvernement du Québec accordant des allocations aux citoyens canadiens, résidents permanents ou réfugiés du Québec dont les ressources sont insuffisantes pour subvenir à leurs besoins de base et qui, depuis 2007, ne présentent pas de contraintes sévères à l’emploi.
-En février 2015, on comptait 215 391 adultes prestataires du programme de l'aide sociale au Québec.
+512,353,361,astéroide_de_la_ceinture_principale_d'asteroides
+(25924) Douglasadams est un astéroïde de la ceinture principale d'astéroïdes. Il fut découvert par le programme LINEAR le 19 février 2001 à Socorro.
+
+Il présente une orbite caractérisée par un demi-grand axe de 2,414 UA, une excentricité de 0,166 et une inclinaison de 1,72° par rapport à l'écliptique.
+
+Il fut nommé en hommage à l'écrivain britannique Douglas Adams, connu internationalement pour son roman « Le Guide du voyageur galactique ».
